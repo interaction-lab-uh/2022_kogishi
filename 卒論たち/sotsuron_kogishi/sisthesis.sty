@@ -1,0 +1,157 @@
+%
+% sisthesis.sty based on suthesis-2e.sty
+%
+
+\ProvidesPackage{sisthesis}[2021/12/04]
+
+
+% 余白を，上35mm, 下30mm, 左30mm, 右25mmとしたい。
+% 以下の設定は、hoffset, voffset分広くなっている。
+%\paperheight 297truemm
+%\paperwidth 210truemm 
+\topmargin 9.6truemm % 1inch=25.4mm + 9.6mm = 35mm
+\headheight 0truemm
+\headsep 0truemm
+\textheight 232truemm
+\oddsidemargin 4.6truemm % 1inch=25.4mm + 4.6mm = 30mm
+\evensidemargin\oddsidemargin
+\textwidth 155truemm % 210mm-30mm-25mm
+%geometryパッケージ。うまくいかない。
+%\usepackage[truedimen,top=35truemm,bottom=30truemm,left=30mm,right=25mm]{geometry}
+
+\renewcommand{\baselinestretch}{1.3}
+
+\brokenpenalty=10000
+
+% First thing we do is make sure that report has been loaded.  A
+% common error is to try to use suthesis as a documentstyle.
+\@ifundefined{chapter}{\@latexerr{`jsreport'または`jreport'を使用してください}{You should probably read the sisthesis documentation.}}{}
+
+
+% \author, \title are defined in report; here are the rest of the
+% front matter defining macros
+\def\advis@r{指導教員}
+\def\principaladviser#1{\gdef\@principaladviser{#1}}
+\def\submitdate#1{\gdef\@submitdate{#1}}
+\def\enrollmentyear#1{\gdef\@enrollmentyear{#1}}
+\def\studentid#1{\gdef\@studentid{#1}}
+\def\subtitle#1{\gdef\@subtitle{#1}}
+\def\@title{}\def\@subtitle{}\def\@author{}\def\@dept{}
+\def\@principaladviser{}
+\def\@enrollmentyear{}
+\def\@studentid{}
+\def\@submitdate{\number\the\year\ 年 \number\the\month 月\space }
+\ifnum\month=12
+    \@tempcnta=\year \advance\@tempcnta by 1
+    \edef\@copyrightyear{\number\the\@tempcnta}
+\else
+    \def\@copyrightyear{\number\the\year}
+\fi
+\newif\iffigurespage \newif\iftablespage
+\newif\ifthesiscopyright
+
+\figurespagefalse \tablespagefalse
+
+
+\def\titlep{%
+        \thispagestyle{empty}%
+        \null\vskip0.1in%
+        \begin{center} \Large
+            \advis@r: \@principaladviser
+        \end{center}
+        \null\vskip0.3in%
+        \begin{center} \huge
+            \@title
+        \end{center}
+        \ifx \@subtitle \empty
+        \begin{center} \Large
+            \ 
+        \end{center}
+        \else
+        \begin{center} \Large
+            --\@subtitle--
+        \end{center}
+        \fi
+        \vfill
+        \begin{flushright} \Large
+             兵庫県立大学
+             社会情報科学部\\
+             社会情報科学科\\
+             \@enrollmentyear 年度入学\\
+             \@studentid\\
+             \@author\\
+             \@submitdate 提出
+        \end{flushright}
+%        \vfill
+        \vskip.2in\newpage}
+
+\def\beforepreface{
+        \pagenumbering{roman}
+        \pagestyle{plain}
+        \titlep
+        \setcounter{page}{1}
+        \cleardoublepage}
+
+\newcommand{\setstretch}[1]{%
+  \def\baselinestretch{#1}%
+  \@currsize
+}
+
+\def\prefacesection#1{%
+        \setstretch{1.3} %1.3だと20行800字
+%        \setstretch{1.1} %1.1だと25行1000字
+        \begin{center} \large
+            \@title \\ \normalsize
+            \ifx \@subtitle \empty
+                \
+            \else
+                --\@subtitle--
+            \fi
+        \end{center}
+        \begin{flushright} \normalsize
+             \@studentid \ \@author\\ 
+             \advis@r: \@principaladviser
+        \end{flushright}
+        \begin{flushleft} \normalsize\bf
+        {#1}
+        \end{flushleft}
+        \addcontentsline{toc}{chapter}{#1}}
+
+\def\afterpreface{\newpage
+        \setstretch{1.3}
+        \setcounter{tocdepth}{2} % 後から追加
+        \tableofcontents
+        \iftablespage
+           \listoftables
+        \fi
+        \iffigurespage
+           \listoffigures
+        \fi
+        \cleardoublepage
+        \pagenumbering{arabic}
+%        \pagestyle{headings}}
+        \pagestyle{plain}}
+
+% Redefine \thebibliography to go to a new page and put an entry in the
+% table of contents
+%\let\@ldthebibliography\thebibliography
+%\renewcommand{\thebibliography}[1]{\newpage
+%                \@ldthebibliography{#1}%
+%%\addcontentsline{toc}{chapter}{\bibname}
+%}
+
+% redefine \@endpart so the blank page after part has a page number
+\def\@endpart{\vfil\newpage
+              \if@twoside
+               \if@openright
+                \null
+                \thispagestyle{plain}%
+                \newpage
+               \fi
+              \fi
+              \if@tempswa
+                \twocolumn
+              \fi}
+
+% Start out normal
+\pagestyle{plain}
